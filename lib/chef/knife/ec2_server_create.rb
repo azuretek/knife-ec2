@@ -591,12 +591,20 @@ class Chef
             }
             ssh_override_winrm
           end
-          bootstrap_for_windows_node(@server, ssh_connect_host).run
+
+          # Don't trigger bootstrap if in solo mode
+          if Chef::Config[:knife][:chef_mode] != "solo"
+            bootstrap_for_windows_node(@server, ssh_connect_host).run
+          end
         else
           print "\n#{ui.color("Waiting for sshd access to become available", :magenta)}"
           wait_for_sshd(ssh_connect_host)
           ssh_override_winrm
-          bootstrap_for_linux_node(@server, ssh_connect_host).run
+
+          # Don't trigger bootstrap if in solo mode
+          if Chef::Config[:knife][:chef_mode] != "solo"
+            bootstrap_for_linux_node(@server, ssh_connect_host).run
+          end
         end
 
         puts "\n"
